@@ -1,4 +1,4 @@
-package leet
+package slides
 
 import (
 	"fmt"
