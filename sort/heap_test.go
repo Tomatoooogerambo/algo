@@ -7,7 +7,7 @@ import (
 
 func TestHeap(t *testing.T) {
 	a := []int{3, 1, 4, 5, 6, 2}
-	h := &heap{}
+	h := &MHeap{}
 	h.list = make([]int, 0)
 	for i := 0; i < len(a); i++ {
 		h.add(a[i])
@@ -18,71 +18,72 @@ func TestHeap(t *testing.T) {
 	}
 }
 
-type heap struct {
+// 构造堆
+type MHeap struct {
 	list []int
 }
 
-func (h *heap) left(i int) int {
+func (h *MHeap) left(i int) int {
 	return 2*i + 1
 }
 
-func (h *heap) right(i int) int {
+func (h *MHeap) right(i int) int {
 	return 2*i + 2
 }
 
-func (h *heap) parent(i int) int {
+func (h *MHeap) parent(i int) int {
 	return (i - 1) / 2
 }
 
-func (h *heap) swap(i, j int) {
-	h.list[i], h.list[j] = h.list[j], h.list[i]
-}
-
-func (h *heap) size() int {
+func (h *MHeap) size() int {
 	return len(h.list)
 }
 
-func (h *heap) shiftUp(i int) {
+func (h *MHeap) swap(i, j int) {
+	h.list[i], h.list[j] = h.list[j], h.list[i]
+}
+
+func (h *MHeap) shiftUp(i int) {
 	for {
 		p := h.parent(i)
-		if p < 0 || h.list[p] >= h.list[i] {
+		if p < 0 || h.list[i] <= h.list[p] {
 			break
 		}
-
-		h.swap(p, i)
+		h.swap(i, p)
 		i = p
 	}
 }
 
-func (h *heap) shiftDown(i int) {
+func (h *MHeap) shiftDown(i int) {
 	for {
-		l, r, min := h.left(i), h.right(i), i
-		if l < h.size() && h.list[l] > h.list[min] {
-			min = l
+		l, r := h.left(i), h.right(i)
+		cur := i
+		if l < h.size() && h.list[l] > h.list[cur] {
+			cur = l
+		}
+		if r < h.size() && h.list[r] > h.list[cur] {
+			cur = r
 		}
 
-		if r < h.size() && h.list[r] > h.list[min] {
-			min = r
-		}
-
-		if i == min {
+		// 如果一同操作下来 cur没有变化,说明已经到了推出的位置
+		if cur == i {
 			break
 		}
 
-		h.swap(min, i)
-		i = min
+		h.swap(i, cur)
+		i = cur
 	}
 }
 
-func (h *heap) add(n int) {
-	h.list = append(h.list, n)
+func (h *MHeap) add(num int) {
+	h.list = append(h.list, num)
 	h.shiftUp(h.size() - 1)
 }
 
-func (h *heap) pop() int {
-	max := h.list[0]
+func (h *MHeap) pop() int {
+	p := h.list[0]
 	h.swap(0, h.size()-1)
 	h.list = h.list[:h.size()-1]
 	h.shiftDown(0)
-	return max
+	return p
 }
