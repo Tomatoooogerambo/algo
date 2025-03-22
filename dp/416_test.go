@@ -28,17 +28,15 @@ func canPartition(nums []int) bool {
 
 	// 初始化 dp
 	dp := make([][]bool, l+1)
-	for i := 0; i < l+1; i++ {
+	for i := range dp {
 		dp[i] = make([]bool, sum+1)
 	}
 
 	dp[0][0] = true
 
-	for i := 0; i < l; i++ {
+	for i, v := range nums {
 		for j := 0; j <= sum; j++ {
-			if j >= nums[i] {
-				dp[i+1][j] = dp[i][j-nums[i]] || dp[i][j]
-			}
+			dp[i+1][j] = j >= v && dp[i][j-v] || dp[i][j]
 		}
 	}
 
